@@ -1,6 +1,7 @@
 const bcryptjs = require('bcryptjs');
 const db = require('../database/models');
 
+
 const mainController = {
   home: (req, res) => {
     db.Book.findAll({
@@ -24,12 +25,28 @@ const mainController = {
     res.render('search', { books: [] });
   },
   bookSearchResult: (req, res) => {
-    // Implement search by title
-    res.render('search');
-  },
+    const searchQuery = req.query.search
+    db.Book.findAll({
+      where: {
+        [db.Sequelize.Op.or]: [
+          db.Sequelize.where(
+            db.Sequelize.fn( db.Sequelize.col("Book.title")),
+            "LIKE",
+            `%${searchQuery()}%`
+          ),
+        ],
+      },
+    })
+    .then((books) => {
+      res.render("/books/search", { search: books });
+    })
+    .catch(error =>{console.log(error)})
+},
+
   deleteBook: (req, res) => {
-    // Implement delete book
-    res.render('home');
+    db.Book.destroy({where:{id:req.params.Book}})
+    .then(res.render('home'))
+    .catch((error) => console.log(error))
   },
   authors: (req, res) => {
     db.Author.findAll()
@@ -39,11 +56,11 @@ const mainController = {
       .catch((error) => console.log(error));
   },
   authorBooks: (req, res) => {
-    db.Author.findOne(req.params.id,{
-      include: [{ association: 'books' }]
+    db.Book.findByPk(req.params.id,{
+      include: [{ association: 'authors' }]
     })
-    .then((authorBooks)=>{
-      res.render('authorBooks',{ authorBooks } );
+    .then((book)=>{
+      res.render('authorBooks',{ book } );
     })
     .catch((error)=>console.log(error))
     
@@ -65,7 +82,6 @@ const mainController = {
       .catch((error) => console.log(error));
   },
   login: (req, res) => {
-    // Implement login process
     res.render('login');
   },
   processLogin: (req, res) => {   
@@ -96,7 +112,14 @@ const mainController = {
     res.render('editBook', {id: req.params.id})
   },
   processEdit: (req, res) => {
-    // Implement edit book
+    db.Book.update({title:req.body.title,
+    description:req.body.description,
+  cover:req.body.cover,
+author:req.params.author},
+{
+  where:{id:req.params.id}
+})
+.then()
     res.render('home');
   }
 };
