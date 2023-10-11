@@ -16,13 +16,16 @@
       
         <div class="feature col">
           <div class="feature-icon bg-gradient">
-            <img class="d-block mx-auto mb-4" src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Catcher-in-the-rye-red-cover.jpg" alt="" width="172" height="257">
+            <img class="d-block mx-auto mb-4" src="<%= book.cover %>" alt="<%= book.title%>" width="172" height="257">
           </div>
-          <h2>Book Title</h2>
-          <p>Book description.</p>
-          <a href="#" class="icon-link">
+          <h2><%= book.title%></h2>
+          <p><%= book.description%></p>
+          <a href="./bookDetail" class="icon-link">
             Detail
           </a>
+          <% book.authors.map((author, index) => { %>
+            <%= `${author.name}${(index === book.authors.length - 1) ? '.' : ', '}` %>
+          <% }) %>
         </div>
 
         <div class="feature col">
@@ -31,7 +34,7 @@
           </div>
           <h2>Book Title</h2>
           <p>Book description.</p>
-          <a href="#" class="icon-link">
+          <a href="./bookDetail" class="icon-link">
             Detail
           </a>
         </div>

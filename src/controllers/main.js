@@ -12,8 +12,13 @@ const mainController = {
       .catch((error) => console.log(error));
   },
   bookDetail: (req, res) => {
-    // Implement look for details in the database
-    res.render('bookDetail');
+    db.Book.findByPk(req.params.id, {
+      include: [{ association: 'authors' }]
+    })
+      .then((book) => {
+        res.render('bookDetail', { book });
+      })
+      .catch((error) => console.log(error));
   },
   bookSearch: (req, res) => {
     res.render('search', { books: [] });
@@ -34,8 +39,14 @@ const mainController = {
       .catch((error) => console.log(error));
   },
   authorBooks: (req, res) => {
-    // Implement books by author
-    res.render('authorBooks');
+    db.Author.findOne(req.params.id,{
+      include: [{ association: 'books' }]
+    })
+    .then((authorBooks)=>{
+      res.render('authorBooks',{ authorBooks } );
+    })
+    .catch((error)=>console.log(error))
+    
   },
   register: (req, res) => {
     res.render('register');
@@ -57,9 +68,28 @@ const mainController = {
     // Implement login process
     res.render('login');
   },
-  processLogin: (req, res) => {
-    // Implement login process
-    res.render('home');
+  processLogin: (req, res) => {   
+   db.User.findOne({
+    where: {
+        Email: req.body.Email
+    }
+}).then((userToLogin) => {
+    if (userToLogin) {
+        const isOkPassword = bcryptjs.compareSync(req.body.Pass, userToLogin.Pass);
+        if (isOkPassword) {
+            delete userToLogin.Pass;
+            req.session.userLogged = userToLogin;
+            return res.redirect('/home');
+        }
+    }
+    return res.render('./users/login', {
+        errors: {
+            mail: {
+                msg: 'Las credenciales no son válidas'
+            }
+        }
+    });
+});
   },
   edit: (req, res) => {
     // Implement edit book
