@@ -1,6 +1,6 @@
 const bcryptjs = require('bcryptjs');
 const db = require('../database/models');
-
+const {Op} = require('sequelize')
 
 const mainController = {
   home: (req, res) => {
@@ -25,23 +25,26 @@ const mainController = {
     res.render('search', { books: [] });
   },
   bookSearchResult: (req, res) => {
-    const searchQuery = req.query.search
+    const { title } = req.body;
+    console.log(title);
+  
     db.Book.findAll({
+      include: ['authors'],
       where: {
-        [db.Sequelize.Op.or]: [
-          db.Sequelize.where(
-            db.Sequelize.fn( db.Sequelize.col("Book.title")),
-            "LIKE",
-            `%${searchQuery()}%`
-          ),
-        ],
-      },
+        title: { [Op.substring]: title }
+      }
     })
-    .then((books) => {
-      res.render("/books/search", { search: books });
-    })
-    .catch(error =>{console.log(error)})
-},
+      .then(books => {
+        if (books.length === 0) {
+          res.render('noResults');
+        } else {
+          res.render('search', { books });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
 
   deleteBook: (req, res) => {
     db.Book.destroy({where:{id:req.params.Book}})

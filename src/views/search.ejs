@@ -11,21 +11,28 @@
 </head>
 <body>
   <div class="container">
-    <%- include('partials/header.ejs') %>
 
-    <div class="container">
+      <%- include('partials/header.ejs') %>
 
-      <form action="/books/search" method="POST" class="col-12 col-lg-auto mb-3 me-lg-3" _lpchecked="1">
-        <div class="input-group">
-          <input type="text" id="search" class="form-control" placeholder="Book Title..." name="title">
-          <button type="submit" id="search" class="btn btn-secondary">Search</button>
-        </div>
-      </form>
-
-
-    <div class="list-group" id="resultsDiv">
+      <div class="container">
+  
+        <form action="/books/search" method="POST" class="col-12 col-lg-auto mb-3 me-lg-3" _lpchecked="1">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Book Title..." name="title">
+            <button type="submit" class="btn btn-secondary">Search</button>
+          </div>
+        </form>
+         
+      <div class="list-group">
+        <% if (books.length > 0) { %>
+          <% books.forEach(({title,id}) => { %>
+            <a href="/books/detail/<%= id %>" class="list-group-item list-group-item-action">
+              <%= title %>
+            </a>
+          <% }) %>
       
-    </div>
+        
+        <% } %>
   </div>
 </div>
 
