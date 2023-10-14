@@ -1,6 +1,7 @@
 const bcryptjs = require('bcryptjs');
 const db = require('../database/models');
 const {Op} = require('sequelize')
+const { validationResult } = require('express-validator');
 
 const mainController = {
   home: (req, res) => {
@@ -47,9 +48,23 @@ const mainController = {
   },
 
   deleteBook: (req, res) => {
-    db.Book.destroy({where:{id:req.params.Book}})
-    .then(res.render('home'))
-    .catch((error) => console.log(error))
+    db.BooksAuthors.destroy({
+      where : {
+        BookId : req.params.id
+      }
+    }).then((response) => {
+      if (response){
+        db.Book.destroy({
+          where : {
+            id: req.params.id
+          },
+          force : true
+          
+        }).then(() => res.redirect('/'))
+      }
+   
+    }).catch(error => console.log(error))
+
   },
   authors: (req, res) => {
     db.Author.findAll()
@@ -110,21 +125,35 @@ const mainController = {
     });
 });
   },
-  edit: (req, res) => {
-    // Implement edit book
-    res.render('editBook', {id: req.params.id})
-  },
-  processEdit: (req, res) => {
-    db.Book.update({title:req.body.title,
-    description:req.body.description,
-  cover:req.body.cover,
-author:req.params.author},
-{
-  where:{id:req.params.id}
-})
-.then()
-    res.render('home');
-  }
-};
+  edit: async (req, res) => {
+    let bookToEdit= await db.Book.findByPk (req.params.id,{
+      include: [{association:'authors'}],
+      raw: true,
+      nest: true      
+      })
+    if(bookToEdit){
+      res.render('editBook', {book:bookToEdit})
+    }else{
+      res.send('El libro no fue encontrado.');
+    }  
+    },
+    processEdit: async (req, res) => {  let bookToEditP = await db.Book.findByPk(req.params.id, {
+        include: [{association: "authors"}]
+    })
+    let books = db.Book.findAll({
+      include: [{ association: 'authors' }]
+    })
+    if(bookToEditP){
+      db.Book.update({
+        title: req.body.title,
+        description: req.body.description,
+        cover: req.body.cover,
+        }, {where: {id: req.params.id}})  
+        return  res.redirect('/');   
+    }else {
+    res.send('no se encontró el libro')
+    } 
+    }
+  };
 
 module.exports = mainController;
