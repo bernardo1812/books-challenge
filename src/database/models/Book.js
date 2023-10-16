@@ -16,11 +16,11 @@ module.exports = (sequelize, dataTypes) => {
     },
     description: {
       type: dataTypes.STRING
-    }
+    },
   };
   let config = {
     tableName: 'books',
-    timestamps: false
+    timestamps:false,
   };
   const Book = sequelize.define(alias, cols, config);
 

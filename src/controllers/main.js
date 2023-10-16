@@ -48,22 +48,12 @@ const mainController = {
   },
 
   deleteBook: (req, res) => {
-    db.BooksAuthors.destroy({
+    db.Books.destroy({
       where : {
-        BookId : req.params.id
+        id : req.params.id
       }
-    }).then((response) => {
-      if (response){
-        db.Book.destroy({
-          where : {
-            id: req.params.id
-          },
-          force : true
-          
-        }).then(() => res.redirect('/'))
-      }
-   
-    }).catch(error => console.log(error))
+    });
+    res.redirect('/')
 
   },
   authors: (req, res) => {
