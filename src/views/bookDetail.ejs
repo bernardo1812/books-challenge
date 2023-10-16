@@ -22,13 +22,10 @@
           <% }) %></p>
           <p class="lead mb-4"><%= book.description %></p>
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            
-              <button type="button" class="btn btn-primary btn-lg px-4 gap-3"><a class="text-decoration-none" href="/books/edit/<%= book.id %>">Edit</a></button>
-              <form type="submit" action="/books/detail/<%=book.id%>?_method=delete" method="POST">
-                <input type="hidden" name="_method" value="DELETE">
-                <button type="submit" class="btn btn-outline-secondary btn-lg px-4">Delete</button>
-              </form>
-           
+            <a href="/books/edit/<%=book.id%>"><button type="button" class="btn btn-primary btn-lg px-4 gap-3">Edit</button></a>
+            <form action="/delete/<%=book.id%>?_method=delete" method="POST">
+              <button type="submit" class="btn btn-outline-secondary btn-lg px-4">Delete</button>
+            </form>
           </div>
         </div>
       </div>

@@ -126,6 +126,7 @@ const mainController = {
 });
   },
   edit: async (req, res) => {
+    // Implement edit book
     let bookToEdit= await db.Book.findByPk (req.params.id,{
       include: [{association:'authors'}],
       raw: true,
@@ -134,26 +135,29 @@ const mainController = {
     if(bookToEdit){
       res.render('editBook', {book:bookToEdit})
     }else{
-      res.send('El libro no fue encontrado.');
+      res.send('No se encontro el libro que deseea');
     }  
     },
-    processEdit: async (req, res) => {  let bookToEditP = await db.Book.findByPk(req.params.id, {
-        include: [{association: "authors"}]
-    })
-    let books = db.Book.findAll({
-      include: [{ association: 'authors' }]
-    })
-    if(bookToEditP){
-      db.Book.update({
-        title: req.body.title,
-        description: req.body.description,
-        cover: req.body.cover,
-        }, {where: {id: req.params.id}})  
-        return  res.redirect('/');   
-    }else {
-    res.send('no se encontró el libro')
-    } 
-    }
-  };
+
+  processEdit: async (req, res) => {
+    // Implement edit book
+    let bookToEditP = await db.Book.findByPk(req.params.id, {
+      include: [{association: "authors"}]
+  })
+  let books = db.Book.findAll({
+    include: [{ association: 'authors' }]
+  })
+  if(bookToEditP){
+    db.Book.update({
+      title: req.body.title,
+      description: req.body.description,
+      cover: req.body.cover,
+      }, {where: {id: req.params.id}})  
+      return  res.redirect('/');   
+  }else {
+  res.send('No se encontro el libro que deseea')
+  } 
+  }
+};
 
 module.exports = mainController;
